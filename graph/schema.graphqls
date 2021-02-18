@@ -1,0 +1,161 @@
+# common types
+type Error {
+  field: String
+  message: String
+}
+
+type AuditFields {
+  createdAt: Int!
+  createdBy: String!
+  updatedAt: Int
+  updatedBy: String
+}
+
+# user types
+type PartialUser {
+  id: ID!
+  email: String!
+  username: String!
+}
+
+type FullUser {
+  user: PartialUser!
+  details: UserDetails
+}
+
+type UserDetails {
+  displayName: String
+  description: String
+}
+
+# post types
+type PartialPost {
+  id: ID!
+  userID: ID! 
+  linkURL: String!
+  comment: String!
+}
+
+type FullPost {
+  post: PartialPost!
+  linkID: ID!
+  sourceID: ID!
+}
+
+# source types
+type PartialSource {
+  id: ID!
+  name: String!
+  organization: String!
+}
+
+# request types
+# users requests
+input RegisterUserRequest {
+  username: String!
+  email: String!
+  password: String!
+}
+
+input LoginUserRequest {
+  usernameOrEmail: String!
+  password: String!
+}
+
+input ChangePasswordRequest {
+  token: String!
+  newPassword: String!
+}
+
+input FollowRequest {
+  followedID: ID!
+}
+
+#posts requests
+input PostsRequest {
+  userID: ID!
+}
+
+input CreatePostRequest {
+  title: String!
+  comment: String!
+  url: String!
+}
+
+input UpdatePostRequest {
+  title: String!
+  comment: String!
+  url: String!
+}
+
+input DeletePostRequest {
+  postID: ID!
+}
+
+#sources requests
+
+# response types
+type CommonUserResponse {
+  errors: [Error]
+  user: PartialUser
+}
+
+type CommonUsersResponse {
+  errors: [Error]
+  user: [PartialUser]
+}
+
+type CommonPostResponse {
+  errors: [Error]
+  post: PartialPost
+}
+
+type CommonPostsResponse {
+  errors: [Error]
+  posts: [PartialPost]
+}
+
+type CommonSourceResponse {
+  errors: [Error]
+  sources: PartialSource
+}
+
+type CommonSourcesResponse {
+  errors: [Error]
+  sources: [PartialSource]
+}
+
+type CommonErrorResponse {
+  field: String
+  message: String
+}
+
+# queries
+type Query {
+  #users
+  currentUser: CommonUserResponse
+  currentUserUsersFollowed: CommonUserResponse
+  currentUserSourcesFollowed: CommonSourceResponse
+  #posts
+  currentUsersPosts: CommonPostsResponse 
+  posts(input: PostsRequest!): CommonPostsResponse 
+  #sources
+}
+
+# mutations
+type Mutation {
+  #users
+  changePassword(input: ChangePasswordRequest!): CommonUserResponse!
+  forgotPassword(email: String!): Boolean!
+  register(input: RegisterUserRequest!): CommonUserResponse!
+  login(input: LoginUserRequest!): CommonUserResponse!
+  logout: Boolean!
+  followUser(input: FollowRequest!): Boolean!
+  unfollowUser(input: FollowRequest!): Boolean!
+  followSource(input: FollowRequest!): Boolean!
+  unfollowSource(input: FollowRequest!): Boolean!
+  #posts
+  createPost(input: CreatePostRequest!): CommonPostResponse
+  updatePost(input: UpdatePostRequest!): CommonPostResponse 
+  deletePost(input: DeletePostRequest!): CommonPostResponse 
+}
